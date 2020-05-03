@@ -1,5 +1,6 @@
 package com.pgkartavya.Activities;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -22,6 +23,11 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.pgkartavya.MainActivity;
 import com.pgkartavya.R;
 import com.pgkartavya.SessionManager;
@@ -56,17 +62,43 @@ public class Login extends AppCompatActivity {
                 params.put("email", email.getText().toString().trim());
                 params.put("password", password.getText().toString().trim());
 
-                Intent intent = new Intent(Login.this, MainActivity.class);
+                final String TAG = "LOGIN ACTIVITY";
+                final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-                String uid = "1";
-                String name = "Ddev";
-                String phone = "9876543210";
 
-                sessionManager.setLogin(true, uid, name, phone);
-                Log.e("login", sessionManager.getName());
+                db.collection("users")
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        Log.d(TAG, document.getId() + " => " + document.getData()+" - "+document.get("email"));
+                                        Log.e(TAG, document.get("email").toString()+"-"+document.get("password").toString());
+                                        if(document.get("email").toString().equals(email.getText().toString().trim())){
+                                            if(document.get("password").toString().equals(password.getText().toString().trim())){
+                                                Intent intent = new Intent(Login.this, MainActivity.class);
+                                                Log.e(TAG, "Login Success "+document.get("email").toString()+"-"+document.get("password").toString());
 
-                startActivity(intent);
-                finish();
+                                                String uid = document.getId();
+                                                String name = document.get("name").toString();
+                                                String phone = document.get("phone").toString();
+                                                sessionManager.setLogin(true, uid, name, phone);
+                                                Log.e("login", sessionManager.getName());
+
+                                                startActivity(intent);
+                                                finish();
+
+                                            }
+                                        }
+                                        Toast.makeText(Login.this, "Invalid Credentials", Toast.LENGTH_SHORT).show();
+                                    }
+                                } else {
+                                    Log.d(TAG, "Error getting documents: ", task.getException());
+                                }
+                            }
+                        });
+
             }
         });
 

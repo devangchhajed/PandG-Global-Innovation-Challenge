@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "678120645215",
+    "firebase_url": "https://pandgkartavya.firebaseio.com",
+    "project_id": "pandgkartavya",
+    "storage_bucket": "pandgkartavya.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:678120645215:android:9333c7ee361b9a253c31ea",
+        "android_client_info": {
+          "package_name": "com.pgkartavya"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "678120645215-3f01au1j84afiitr6ca2pcon55avlj6m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtxCNhpiVKFk0Pj7zdYWj_a5dWjqFLKjU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "678120645215-3f01au1j84afiitr6ca2pcon55avlj6m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

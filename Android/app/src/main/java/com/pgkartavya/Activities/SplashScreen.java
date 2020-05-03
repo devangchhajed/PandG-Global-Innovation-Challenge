@@ -10,9 +10,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 
-import com.pgkartavya.MainActivity;
 import com.pgkartavya.R;
-import com.pgkartavya.SessionManager;
+import com.pgkartavya.Service.SessionManager;
 
 public class SplashScreen extends AppCompatActivity {
     ImageView splash_image;

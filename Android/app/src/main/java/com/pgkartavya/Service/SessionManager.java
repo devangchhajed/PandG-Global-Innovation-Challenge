@@ -1,13 +1,9 @@
-package com.pgkartavya;
+package com.pgkartavya.Service;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
-
-
-import java.lang.reflect.Type;
-import java.util.List;
 
 public class SessionManager {
     // LogCat tag
@@ -28,6 +24,7 @@ public class SessionManager {
     private static final String KEY_ID = "uid";
     private static final String KEY_NAME = "uname";
     private static final String KEY_PHONE = "uphone";
+    private static final String KEY_EMAIL = "uemail";
     private static final String KEY_IS_LOGGEDIN = "isLoggedIn";
 
     public SessionManager(Context context) {
@@ -38,12 +35,13 @@ public class SessionManager {
 
 
 
-    public void setLogin(boolean isLoggedIn, String id, String name, String phone) {
+    public void setLogin(boolean isLoggedIn, String id, String name, String phone, String email) {
 
         editor.putBoolean(KEY_IS_LOGGEDIN, isLoggedIn);
         editor.putString(KEY_ID, id);
         editor.putString(KEY_NAME, name);
         editor.putString(KEY_PHONE, phone);
+        editor.putString(KEY_EMAIL, email);
 
         // commit changes
         editor.commit();
@@ -63,5 +61,8 @@ public class SessionManager {
     }
     public String getPhone(){
         return (String) pref.getString(KEY_PHONE, "0");
+    }
+    public String getEmail(){
+        return (String) pref.getString(KEY_EMAIL, "0");
     }
 }

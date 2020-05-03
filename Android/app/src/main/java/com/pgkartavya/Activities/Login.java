@@ -11,15 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,9 +19,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.pgkartavya.MainActivity;
 import com.pgkartavya.R;
-import com.pgkartavya.SessionManager;
+import com.pgkartavya.Service.SessionManager;
 
 public class Login extends AppCompatActivity {
 
@@ -77,13 +67,15 @@ public class Login extends AppCompatActivity {
                                         Log.e(TAG, document.get("email").toString()+"-"+document.get("password").toString());
                                         if(document.get("email").toString().equals(email.getText().toString().trim())){
                                             if(document.get("password").toString().equals(password.getText().toString().trim())){
+
                                                 Intent intent = new Intent(Login.this, MainActivity.class);
                                                 Log.e(TAG, "Login Success "+document.get("email").toString()+"-"+document.get("password").toString());
 
                                                 String uid = document.getId();
                                                 String name = document.get("name").toString();
                                                 String phone = document.get("phone").toString();
-                                                sessionManager.setLogin(true, uid, name, phone);
+                                                String email = document.get("email").toString();
+                                                sessionManager.setLogin(true, uid, name, phone, email);
                                                 Log.e("login", sessionManager.getName());
 
                                                 startActivity(intent);

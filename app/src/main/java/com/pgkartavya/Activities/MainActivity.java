@@ -37,5 +37,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+        Button scan = findViewById(R.id.home_scan_btn);
+        scan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, Scanner.class);
+                startActivity(intent);
+            }
+        });
+
+
     }
 }

@@ -1,9 +1,13 @@
 package com.pgkartavya.Activities;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
@@ -15,13 +19,20 @@ import android.view.SurfaceView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.pgkartavya.R;
+import com.pgkartavya.Service.SessionManager;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 
 import android.content.Context;
@@ -40,6 +51,10 @@ public class Scanner extends AppCompatActivity implements LocationListener {
     private ToneGenerator toneGen1;
     private TextView barcodeText;
     private String barcodeData;
+
+    FirebaseFirestore db;
+    SessionManager sessionManager;
+
 
 
     protected LocationManager locationManager;
@@ -60,22 +75,18 @@ public class Scanner extends AppCompatActivity implements LocationListener {
         surfaceView = findViewById(R.id.surface_view);
         barcodeText = findViewById(R.id.barcode_text);
         initialiseDetectorsAndSources();
+        db = FirebaseFirestore.getInstance();
+        sessionManager = new SessionManager(getApplicationContext());
 
 
         txtLat = findViewById(R.id.textview1);
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
 
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
             return;
+
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
     }
@@ -154,6 +165,51 @@ public class Scanner extends AppCompatActivity implements LocationListener {
                                 toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
 
                             }
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                            builder.setTitle("Confirm Saving");
+                            builder.setMessage("Want to save "+barcodeText.getText());
+                            builder.setCancelable(false);
+                            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                    Map<String, String> params = new HashMap<String, String>();
+                                    params.put("productid", barcodeText.getText().toString());
+                                    params.put("userid", sessionManager.getUID());
+
+                                    db.collection("cart")
+                                            .add(params)
+                                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                @Override
+                                                public void onSuccess(DocumentReference documentReference) {
+                                                    setResult(2);
+                                                    finish();
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(getApplicationContext(),
+                                                            "Please Try Again", Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+
+                                    Toast.makeText(getApplicationContext(), "You've choosen to delete all records", Toast.LENGTH_SHORT).show();
+
+                                }
+                            });
+
+                            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(getApplicationContext(), "You've changed your mind to delete all records", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                            builder.show();
+
+
                         }
                     });
 

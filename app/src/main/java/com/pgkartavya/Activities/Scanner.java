@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -54,6 +55,7 @@ public class Scanner extends AppCompatActivity implements LocationListener {
 
     FirebaseFirestore db;
     SessionManager sessionManager;
+    Boolean flag=true;
 
 
 
@@ -82,6 +84,7 @@ public class Scanner extends AppCompatActivity implements LocationListener {
         txtLat = findViewById(R.id.textview1);
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        /*
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
@@ -89,6 +92,8 @@ public class Scanner extends AppCompatActivity implements LocationListener {
 
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+
+         */
     }
 
 
@@ -166,56 +171,65 @@ public class Scanner extends AppCompatActivity implements LocationListener {
 
                             }
 
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
-                            builder.setTitle("Confirm Saving");
-                            builder.setMessage("Want to save "+barcodeText.getText());
-                            builder.setCancelable(false);
-                            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                    Map<String, String> params = new HashMap<String, String>();
-                                    params.put("productid", barcodeText.getText().toString());
-                                    params.put("userid", sessionManager.getUID());
-
-                                    db.collection("cart")
-                                            .add(params)
-                                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                                @Override
-                                                public void onSuccess(DocumentReference documentReference) {
-                                                    setResult(2);
-                                                    finish();
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Toast.makeText(getApplicationContext(),
-                                                            "Please Try Again", Toast.LENGTH_LONG).show();
-                                                }
-                                            });
-
-                                    Toast.makeText(getApplicationContext(), "You've choosen to delete all records", Toast.LENGTH_SHORT).show();
-
-                                }
-                            });
-
-                            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(getApplicationContext(), "You've changed your mind to delete all records", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-
-                            builder.show();
-
-
+                            if(flag==true) {
+                                showAlertBox();
+                            }
                         }
                     });
 
                 }
             }
         });
+    }
+
+    public void showAlertBox(){
+        flag=false;
+        AlertDialog.Builder builder = new AlertDialog.Builder(Scanner.this);
+        builder.setTitle("Confirm Saving");
+        builder.setMessage("Want to save "+barcodeText.getText());
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("productid", barcodeText.getText().toString());
+                params.put("userid", sessionManager.getUID());
+                params.put("status", "false");
+                params.put("timestamp", "Time");
+
+                db.collection("cart")
+                        .add(params)
+                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                setResult(2);
+                                finish();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getApplicationContext(),
+                                        "Please Try Again", Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+                Toast.makeText(getApplicationContext(), "Product Added to the List", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getApplicationContext(), "Lets try again.", Toast.LENGTH_SHORT).show();
+                flag=true;
+            }
+        });
+
+        builder.show();
+
     }
 
 

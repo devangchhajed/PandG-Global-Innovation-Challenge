@@ -4,12 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.pgkartavya.R;
-import com.pgkartavya.Service.SessionManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,6 +16,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Log.e("Main Activity", "Add Prod Called");
+
 
         Button profile = findViewById(R.id.home_profile_btn);
         profile.setOnClickListener(new View.OnClickListener() {
@@ -31,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         addprod.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, AddProduct.class);
+                Intent intent = new Intent(MainActivity.this, Cart.class);
                 startActivity(intent);
             }
         });

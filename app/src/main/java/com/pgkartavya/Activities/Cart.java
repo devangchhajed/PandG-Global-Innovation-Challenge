@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.View;
@@ -41,6 +43,9 @@ public class Cart extends AppCompatActivity {
     ListView cartItemListView;
     SessionManager sessionManager;
     String userUID;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +64,20 @@ public class Cart extends AppCompatActivity {
             }
         });
 
+
+
+        recyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        recyclerView.setHasFixedSize(true);
+
+        // use a linear layout manager
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        // specify an adapter (see also next example)
+
         db = FirebaseFirestore.getInstance();
 
 
@@ -70,14 +89,6 @@ public class Cart extends AppCompatActivity {
         cartItemList = new ArrayList<CartItem>();
 
         refreshList();
-
-        CartItemsAdapter adapter=new CartItemsAdapter(this, cartItemList);
-        cartItemListView.setAdapter(adapter);
-
-
-
-
-
 
     }
 
@@ -98,54 +109,52 @@ public class Cart extends AppCompatActivity {
             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful()) {
-                        itemMasterList.clear();
-                        itemMasterList = new ArrayList<ItemMaster>();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            ItemMaster itemMaster = new ItemMaster(document.getId(),document.get("productname").toString(), document.getString("productqr").toString());
-                            itemMasterList.add(itemMaster);
-                            Log.e(TAG, document.getId()+"-"+document.get("productname").toString()+" - "+document.getString("productqr").toString());
-                        }
-
-                        Log.e(TAG,"Total itemMaster : "+itemMasterList.size());
-
-                        db.collection("cart")
-                                .get()
-                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
-                                            cartItemList.clear();
-                                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                                Log.e(TAG, "Check User : "+document.getString("userid").toString().equals(userUID.toString()));
-                                                if(document.getString("userid").toString().equals(userUID.toString())){
-                                                    String product="";
-                                                    for(ItemMaster item: itemMasterList){
-                                                        Log.e(TAG, "Check Prod : "+document.get("productid").toString().equals(item.getUid().toString())+  document.get("productid").toString()+"-"+item.getUid().toString());
-                                                        if(document.get("productid").toString().equals(item.getProductBarCode().toString())){
-                                                            Log.e(TAG, "Product added to cart "+document.getId());
-                                                            CartItem cartItem = new CartItem(document.getId(),document.get("productid").toString(), document.getString("userid").toString(), document.getString("status").toString(), document.getString("timestamp").toString(), item.getProductName());
-                                                            cartItemList.add(cartItem);
-                                                            break;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            CartItemsAdapter adapter=new CartItemsAdapter(Cart.this, cartItemList);
-                                            cartItemListView.setAdapter(adapter);
-
-                                        } else {
-                                            Log.d(TAG, "Error getting documents: ", task.getException());
-                                        }
-                                        Toast.makeText(getApplicationContext(), ""+ cartItemList.size(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-
-
-
-                    } else {
-                        Log.d(TAG, "Error getting documents: ", task.getException());
+                if (task.isSuccessful()) {
+                    itemMasterList.clear();
+                    itemMasterList = new ArrayList<ItemMaster>();
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        ItemMaster itemMaster = new ItemMaster(document.getId(),document.get("productname").toString(), document.getString("productqr").toString());
+                        itemMasterList.add(itemMaster);
+                        Log.e(TAG, document.getId()+"-"+document.get("productname").toString()+" - "+document.getString("productqr").toString());
                     }
+
+                    Log.e(TAG,"Total itemMaster : "+itemMasterList.size());
+
+                    db.collection("cart")
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                cartItemList.clear();
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    Log.e(TAG, "Check User : "+document.getString("userid").toString().equals(userUID.toString()));
+                                    if(document.getString("userid").toString().equals(userUID.toString())){
+                                        String product="";
+                                        for(ItemMaster item: itemMasterList){
+                                            Log.e(TAG, "Check Prod : "+document.get("productid").toString().equals(item.getUid().toString())+  document.get("productid").toString()+"-"+item.getUid().toString());
+                                            if(document.get("productid").toString().equals(item.getProductBarCode().toString())){
+                                                Log.e(TAG, "Product added to cart "+document.getId());
+                                                CartItem cartItem = new CartItem(document.getId(),document.get("productid").toString(), document.getString("userid").toString(), document.getString("status").toString(), document.getString("timestamp").toString(), item.getProductName());
+                                                cartItemList.add(cartItem);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                mAdapter = new CartItemsAdapter(cartItemList);
+                                recyclerView.setAdapter(mAdapter);
+
+                            } else {
+                                Log.d(TAG, "Error getting documents: ", task.getException());
+                            }
+                            Toast.makeText(getApplicationContext(), ""+ cartItemList.size(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
                 }
             });
 

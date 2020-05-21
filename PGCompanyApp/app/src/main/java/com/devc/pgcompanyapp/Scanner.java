@@ -1,4 +1,4 @@
-package com.pgkartavya.Activities;
+package com.devc.pgcompanyapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -27,10 +27,7 @@ import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.pgkartavya.R;
-import com.pgkartavya.Service.SessionManager;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -42,7 +39,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 
-public class Scanner extends AppCompatActivity implements LocationListener {
+public class Scanner extends AppCompatActivity{
 
     private SurfaceView surfaceView;
     private BarcodeDetector barcodeDetector;
@@ -55,7 +52,6 @@ public class Scanner extends AppCompatActivity implements LocationListener {
     private String barcodeData;
 
     FirebaseFirestore db;
-    SessionManager sessionManager;
     Boolean flag=true;
 
 
@@ -79,22 +75,10 @@ public class Scanner extends AppCompatActivity implements LocationListener {
         barcodeText = findViewById(R.id.barcode_text);
         initialiseDetectorsAndSources();
         db = FirebaseFirestore.getInstance();
-        sessionManager = new SessionManager(getApplicationContext());
 
 
         txtLat = findViewById(R.id.textview1);
 
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        /*
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-            return;
-
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-
-         */
     }
 
 
@@ -193,28 +177,11 @@ public class Scanner extends AppCompatActivity implements LocationListener {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("productid", barcodeText.getText().toString());
-                params.put("userid", sessionManager.getUID());
-                params.put("status", "false");
-                params.put("timestamp", FieldValue.serverTimestamp().toString());
+                String barcode = barcodeText.getText().toString();
 
-                db.collection("cart")
-                        .add(params)
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                            @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                setResult(2);
-                                finish();
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(getApplicationContext(),
-                                        "Please Try Again", Toast.LENGTH_LONG).show();
-                            }
-                        });
+                setResult(Activity.RESULT_OK,
+                        new Intent().putExtra("barcode", barcode));
+                finish();
 
                 Toast.makeText(getApplicationContext(), "Product Added to the List", Toast.LENGTH_SHORT).show();
 
@@ -233,25 +200,4 @@ public class Scanner extends AppCompatActivity implements LocationListener {
 
     }
 
-
-    @Override
-    public void onLocationChanged(Location location) {
-        txtLat = findViewById(R.id.textview1);
-        txtLat.setText("Latitude:" + location.getLatitude() + ", Longitude:" + location.getLongitude());
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        Log.d("Latitude","disable");
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-        Log.d("Latitude","enable");
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-        Log.d("Latitude", "status");
-    }
 }

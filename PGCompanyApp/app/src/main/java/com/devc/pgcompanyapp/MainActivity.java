@@ -1,14 +1,11 @@
-package com.pgkartavya.Activities;
+package com.devc.pgcompanyapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-
-import com.pgkartavya.R;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,28 +13,25 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Button addpro = findViewById(R.id.main_addpro);
 
-        Log.e("Main Activity", "Add Prod Called");
-
-
-        Button profile = findViewById(R.id.home_profile_btn);
-        profile.setOnClickListener(new View.OnClickListener() {
+        addpro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, Profile.class);
+                Intent intent = new Intent(MainActivity.this, AddProduct.class);
                 startActivity(intent);
             }
         });
 
-        Button addprod = findViewById(R.id.home_add_prod_btn);
-        addprod.setOnClickListener(new View.OnClickListener() {
+        Button vali = findViewById(R.id.main_validateuser);
+
+        vali.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, Cart.class);
+                Intent intent = new Intent(MainActivity.this, ValidateUser.class);
                 startActivity(intent);
             }
         });
-
 
     }
 }

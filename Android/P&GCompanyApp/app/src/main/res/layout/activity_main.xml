@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_register"
+    tools:context=".MainActivity">
+
+
+    <Button
+        android:id="@+id/main_addpro"
+        android:text="Add Product"
+        android:textColor="#fff"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp"
+        android:background="#7cb342"
+        android:layout_width="match_parent"
+        android:textAllCaps="false"
+        android:layout_height="50dp" />
+    <Button
+        android:id="@+id/main_validateuser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Validate User"
+        android:elevation="10dp"
+        android:textAllCaps="false"
+        android:textColor="#fff"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        android:background="#f44336" />
+
+
+</LinearLayout>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_main"
+    tools:context=".Activities.MainActivity">
+
+    <Button
+        android:id="@+id/home_profile_btn"
+        android:text="Profile"
+        android:elevation="10dp"
+        android:fontFamily="@font/montserratmedium"
+        android:textColor="#fff"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp"
+        android:background="#7cb342"
+        android:layout_width="match_parent"
+        android:textAllCaps="false"
+        android:layout_height="50dp"/>
+
+    <Button
+        android:id="@+id/home_add_prod_btn"
+        android:text="Rewarded Items"
+        android:elevation="10dp"
+        android:textAllCaps="false"
+        android:fontFamily="@font/montserratmedium"
+        android:textColor="#fff"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        android:background="#f44336"
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+
+</LinearLayout>

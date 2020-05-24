@@ -29,3 +29,9 @@
 ![Sc1](https://github.com/devangchhajed/PandG-Global-Innovation-Challenge/blob/master/Documentation/Screenshot/Dashboard/sc%20(3).png?raw=true)
 
 
+![Sc1](https://github.com/devangchhajed/PandG-Global-Innovation-Challenge/blob/master/Documentation/Screenshot/Dashboard/sc%20(4).png?raw=true)
+
+
+![Sc1](https://github.com/devangchhajed/PandG-Global-Innovation-Challenge/blob/master/Documentation/Screenshot/Dashboard/sc%20(5).png?raw=true)
+
+

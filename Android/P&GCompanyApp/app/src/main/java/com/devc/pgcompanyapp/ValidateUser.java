@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,7 +26,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firestore.v1.WriteResult;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,55 +113,60 @@ public class ValidateUser extends AppCompatActivity {
     public void addProduct(){
         Log.e("UpdateProduct", "New Call Started");
 
+        showAlertBox(selectedProductBArCode, useridTV.getText().toString());
+
+    }
 
 
-        db.collection("cart")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Log.e("UpdateProduct", document.getData().toString());
+    public void showAlertBox(String barcodeText, String userid){
 
-                                if(document.get("userid").equals(useridTV.getText())){
-                                    Log.e("UpdateProduct", "user id match");
-                                    if(document.get("productid").toString().equals(selectedProductBArCode)){
-                                        Log.e("UpdateProduct", "productid match");
-                                        if(document.get("status").toString().equals("false")){
-                                            Log.e("UpdateProduct", "false found");
-                                            Map<String, String> params = new HashMap<String, String>();
-                                            params.put("status", "true");
+        AlertDialog.Builder builder = new AlertDialog.Builder(ValidateUser.this);
+        builder.setTitle("Confirm Saving");
+        builder.setMessage("Want to save "+barcodeText);
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                SimpleDateFormat s = new SimpleDateFormat("ddMMyyyyhhmmss");
+                String format = s.format(new Date());
 
-                                            DocumentReference docref = db.collection("cart").document(document.getId().toString());
-                                            docref
-                                                    .update("status", "true")
-                                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                        @Override
-                                                        public void onSuccess(Void aVoid) {
-                                                            Log.d(TAG, "DocumentSnapshot successfully updated!");
-                                                            Toast.makeText(getApplicationContext(), "Product Added", Toast.LENGTH_SHORT).show();
-                                                            productNameBox.setText("");
-                                                        }
-                                                    })
-                                                    .addOnFailureListener(new OnFailureListener() {
-                                                        @Override
-                                                        public void onFailure(@NonNull Exception e) {
-                                                            Log.w(TAG, "Error updating document", e);
-                                                        }
-                                                    });
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("productid", barcodeText);
+                params.put("userid", userid);
+                params.put("status", "true");
+                params.put("timestamp", format);
 
-                                        }
-                                    }
-                                }
-
+                db.collection("cart")
+                        .add(params)
+                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                productNameBox.setText("");
                             }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getApplicationContext(),
+                                        "Please Try Again", Toast.LENGTH_LONG).show();
+                            }
+                        });
 
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
+                Toast.makeText(getApplicationContext(), "Product Added to the List", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getApplicationContext(), "Lets try again.", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        builder.show();
+
     }
 
 

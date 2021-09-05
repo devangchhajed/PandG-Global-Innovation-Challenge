@@ -59,8 +59,8 @@ public class Cart extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Cart.this, Scanner.class);
-                startActivityForResult(intent,2);
+//                Intent intent = new Intent(Cart.this, Scanner.class);
+//                startActivityForResult(intent,2);
             }
         });
 
